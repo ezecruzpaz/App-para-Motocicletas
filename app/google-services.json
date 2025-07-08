@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "286488307613",
+    "project_id": "mototracker-6a022",
+    "storage_bucket": "mototracker-6a022.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:286488307613:android:c477f1e357a2606c507174",
+        "android_client_info": {
+          "package_name": "com.example.mototracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKEsx5Edp7DvvfJTwHIYDiDM54DOqak-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
