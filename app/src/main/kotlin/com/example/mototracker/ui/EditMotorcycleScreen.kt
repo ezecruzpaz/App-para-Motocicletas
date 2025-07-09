@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -31,7 +30,10 @@ import kotlinx.coroutines.runBlocking
 fun EditMotorcycleScreen(userId: Long, onNavigate: (String) -> Unit) {
     var brand by remember { mutableStateOf("") }
     var model by remember { mutableStateOf("") }
+    var year by remember { mutableStateOf("") }
     var plate by remember { mutableStateOf("") }
+    var displacement by remember { mutableStateOf("") }
+    var insurance by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val db = AppDatabase.getInstance(LocalContext.current)
     var existingMotorcycle by remember { mutableStateOf<Motorcycle?>(null) }
@@ -42,7 +44,10 @@ fun EditMotorcycleScreen(userId: Long, onNavigate: (String) -> Unit) {
             existingMotorcycle = motorcycles.first()
             brand = existingMotorcycle?.brand ?: ""
             model = existingMotorcycle?.model ?: ""
+            year = existingMotorcycle?.year?.toString() ?: ""
             plate = existingMotorcycle?.plate ?: ""
+            displacement = existingMotorcycle?.displacement?.toString() ?: ""
+            insurance = existingMotorcycle?.insurance ?: ""
         }
     }
 
@@ -67,7 +72,7 @@ fun EditMotorcycleScreen(userId: Long, onNavigate: (String) -> Unit) {
                 tint = Color(0xFF0D0F1C)
             )
             Text(
-                text = "Registrar Motocicleta",
+                text = "Datos Motocicleta",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF0D0F1C),
@@ -76,19 +81,30 @@ fun EditMotorcycleScreen(userId: Long, onNavigate: (String) -> Unit) {
             )
         }
 
+
+
         OutlinedTextField(
             value = brand,
             onValueChange = { brand = it },
             label = { Text("Marca") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp),
+                .padding(top = 8.dp),
             shape = RoundedCornerShape(8.dp)
         )
         OutlinedTextField(
             value = model,
             onValueChange = { model = it },
             label = { Text("Modelo") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            shape = RoundedCornerShape(8.dp)
+        )
+        OutlinedTextField(
+            value = year,
+            onValueChange = { year = it },
+            label = { Text("Año") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp),
@@ -103,23 +119,51 @@ fun EditMotorcycleScreen(userId: Long, onNavigate: (String) -> Unit) {
                 .padding(top = 8.dp),
             shape = RoundedCornerShape(8.dp)
         )
+        OutlinedTextField(
+            value = displacement,
+            onValueChange = { displacement = it },
+            label = { Text("Cilindrada (opcional)") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            shape = RoundedCornerShape(8.dp)
+        )
+        OutlinedTextField(
+            value = insurance,
+            onValueChange = { insurance = it },
+            label = { Text("Seguro (opcional)") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            shape = RoundedCornerShape(8.dp)
+        )
 
         Button(
             onClick = {
                 if (brand.isNotEmpty() && model.isNotEmpty() && plate.isNotEmpty()) {
                     errorMessage = null
                     runBlocking {
+                        val yearInt = year.toIntOrNull()
+                        val displacementInt = displacement.toIntOrNull()
+                        val motorcycle = Motorcycle(
+                            id = existingMotorcycle?.id ?: 0, // Usar el ID existente o 0 para nuevo
+                            userId = userId,
+                            brand = brand,
+                            model = model,
+                            year = yearInt,
+                            plate = plate,
+                            displacement = displacementInt,
+                            insurance = if (insurance.isNotEmpty()) insurance else null
+                        )
                         if (existingMotorcycle == null) {
-                            val motorcycle = Motorcycle(userId = userId, brand = brand, model = model, plate = plate)
-                            db.appDao().insertMotorcycle(motorcycle)
+                            db.appDao().insertMotorcycle(motorcycle) // Insertar nueva motocicleta
                         } else {
-                            val updatedMotorcycle = Motorcycle(userId = userId, brand = brand, model = model, plate = plate)
-                            db.appDao().insertMotorcycle(updatedMotorcycle) // Reemplaza o actualiza
+                            db.appDao().updateMotorcycle(motorcycle) // Actualizar motocicleta existente
                         }
                         onNavigate("profile")
                     }
                 } else {
-                    errorMessage = "Por favor, completa todos los campos"
+                    errorMessage = "Por favor, completa los campos obligatorios (Marca, Modelo, Placa)"
                 }
             },
             modifier = Modifier
@@ -136,7 +180,6 @@ fun EditMotorcycleScreen(userId: Long, onNavigate: (String) -> Unit) {
                 fontSize = 16.sp
             )
         }
-
         errorMessage?.let {
             Text(
                 text = it,

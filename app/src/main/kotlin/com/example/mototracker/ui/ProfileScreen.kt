@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
@@ -113,7 +114,7 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalAlignment = Alignment.Start // Alinear a la izquierda
+                horizontalAlignment = Alignment.CenterHorizontally // Centrar horizontalmente
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(64.dp))
@@ -132,25 +133,25 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0D0F1C),
-                        textAlign = TextAlign.Start // Alinear texto a la izquierda
+                        textAlign = TextAlign.Center // Centrar texto
                     )
                     Text(
                         text = userData?.phone?.let { "+52 $it" } ?: "+1 (N/A)",
                         fontSize = 16.sp,
-                        color = Color(0xFF47569E),
-                        textAlign = TextAlign.Start // Alinear texto a la izquierda
+                        color = Color(0xFF0D0F1C),
+                        textAlign = TextAlign.Center // Centrar texto
                     )
                     Text(
                         text = userData?.email ?: "N/A",
                         fontSize = 16.sp,
-                        color = Color(0xFF47569E),
-                        textAlign = TextAlign.Start // Alinear texto a la izquierda
+                        color = Color(0xFF0D0F1C),
+                        textAlign = TextAlign.Center // Centrar texto
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-// Motorcycle Section
+            // Motorcycle Section
             Text(
                 text = "Motocicleta",
                 fontSize = 18.sp,
@@ -168,66 +169,120 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(64.dp))
                 } else if (motorcycleData == null) {
-                    Text(
-                        text = "No motorcycle registered yet.",
-                        fontSize = 16.sp,
-                        color = Color(0xFF47569E),
-                        textAlign = TextAlign.Start // Alinear texto a la izquierda
-                    )
-                    Button(
-                        onClick = { onNavigate("editMotorcycle") },
-                        modifier = Modifier
-                            .fillMaxWidth(0.6f) // Reducido de 0.8f a 0.6f
-                            .height(50.dp) // Reducido de 50.dp a 40.dp
-                            .padding(top = 16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF008080)),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = "Registrar Motocicleta",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                            textAlign = TextAlign.Start // Alinear texto a la izquierda
-                        )
+                    Box {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF8FFFFF)) // Color de fondo de la card
+                        ) {
+                            Text(
+                                text = "No motorcycle registered yet.",
+                                fontSize = 16.sp,
+                                color = Color(0xFF47569E),
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                        FloatingActionButton(
+                            onClick = { onNavigate("editMotorcycle") },
+                            modifier = Modifier
+                                .size(48.dp) // Tamaño
+                                .align(Alignment.TopEnd)
+                                .offset(y = (-18.dp), x = (8.dp)), // Parte arriba y un poco adentro
+                            containerColor = Color(0xFF008080),
+                            elevation = FloatingActionButtonDefaults.elevation(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Registrar Motocicleta",
+                                modifier = Modifier.size(24.dp), // Ícono
+                                tint = Color.White
+                            )
+                        }
                     }
                 } else {
-                    Text(
-                        text = "${motorcycleData?.brand ?: "N/A"} ${motorcycleData?.model ?: "N/A"}",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0D0F1C),
-                        textAlign = TextAlign.Start // Alinear texto a la izquierda
-                    )
-                    Text(
-                        text = "Placa: ${motorcycleData?.plate ?: "N/A"}",
-                        fontSize = 14.sp,
-                        color = Color(0xFF47569E),
-                        textAlign = TextAlign.Start // Alinear texto a la izquierda
-                    )
-                    Button(
-                        onClick = { onNavigate("editMotorcycle") },
-                        modifier = Modifier
-                            .fillMaxWidth(0.6f) // Reducido de 0.8f a 0.6f
-                            .height(50.dp) // Reducido de 50.dp a 40.dp
-                            .padding(top = 16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF008080)),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF8FFFFF)) // Color de fondo de la card
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "${motorcycleData?.brand ?: "N/A"} ${motorcycleData?.model ?: "N/A"}",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Black, // Nuevo color de texto
+                                        textAlign = TextAlign.Start
+                                    )
+                                    Text(
+                                        text = "Placa: ${motorcycleData?.plate ?: "N/A"}",
+                                        fontSize = 14.sp,
+                                        color = Color.Black, // Nuevo color de texto
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    )
+                                    Text(
+                                        text = "Año: ${motorcycleData?.year?.toString() ?: "N/A"}",
+                                        fontSize = 14.sp,
+                                        color = Color.Black, // Nuevo color de texto
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    )
+                                    Text(
+                                        text = "Cilindrada: ${motorcycleData?.displacement?.toString() ?: "N/A"} cc",
+                                        fontSize = 14.sp,
+                                        color = Color.Black, // Nuevo color de texto
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    )
+                                    Text(
+                                        text = "Seguro: ${motorcycleData?.insurance ?: "N/A"}",
+                                        fontSize = 14.sp,
+                                        color = Color.Black, // Nuevo color de texto
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    )
+                                }
+                                // Imagen preestablecida a la derecha (cuadrada)
+                                AsyncImage(
+                                    model = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIxa2Hwh8FFUJDGeFhubWEtgb9w9mZ5lhN8JnA7_fjRYyqKh-XDksKyx43xsZxu0USYU&usqp=CAU",
+                                    contentDescription = "Motocycle Image",
+                                    modifier = Modifier
+                                        .size(94.dp), // Forma cuadrada sin clip(CircleShape)
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+                        FloatingActionButton(
+                            onClick = { onNavigate("editMotorcycle") },
+                            modifier = Modifier
+                                .size(48.dp) // Tamaño
+                                .align(Alignment.TopEnd)
+                                .offset(y = (-18.dp), x = (8.dp)), // Parte arriba y un poco adentro
+                            containerColor = Color(0xFF39D8D4),
+                            elevation = FloatingActionButtonDefaults.elevation(4.dp)
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
-                                contentDescription = "Editar",
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Editar Motocicleta",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                textAlign = TextAlign.Start // Alinear texto a la izquierda
+                                contentDescription = "Editar Motocicleta",
+                                modifier = Modifier.size(24.dp), // Ícono
+                                tint = Color.White
                             )
                         }
                     }

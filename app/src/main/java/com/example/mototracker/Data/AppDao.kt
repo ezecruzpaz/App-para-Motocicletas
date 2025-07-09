@@ -20,17 +20,20 @@ interface AppDao {
     @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
     suspend fun getUserById(id: Long): User?
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) // Cambiado a REPLACE para evitar conflictos
     suspend fun insertMotorcycle(motorcycle: Motorcycle)
 
     @Query("SELECT * FROM motorcycles WHERE userId = :userId")
     suspend fun getMotorcyclesByUserId(userId: Long): List<Motorcycle>
 
     @Update
-    suspend fun markUserAsSynced(user: User) // Usar Update para mayor flexibilidad
+    suspend fun updateMotorcycle(motorcycle: Motorcycle) // Nuevo método para actualizar
 
     @Update
-    suspend fun markMotorcycleAsSynced(motorcycle: Motorcycle) // Usar Update para mayor flexibilidad
+    suspend fun markUserAsSynced(user: User)
+
+    @Update
+    suspend fun markMotorcycleAsSynced(motorcycle: Motorcycle)
 
     @Query("SELECT * FROM users WHERE synced = 0")
     suspend fun getUnsyncedUsers(): List<User>
