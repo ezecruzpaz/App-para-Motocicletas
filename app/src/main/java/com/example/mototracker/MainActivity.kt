@@ -1,9 +1,12 @@
 package com.example.mototracker
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -24,6 +28,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.work.*
 import com.example.mototracker.data.AppDatabase
+import com.example.mototracker.ui.EditUserScreen
+import com.example.mototracker.ui.LaunchPhoneAppScreen
 import com.example.mototracker.ui.LoginScreen
 import com.example.mototracker.ui.ProfileScreen
 import com.example.mototracker.ui.EditMotorcycleScreen
@@ -50,10 +56,20 @@ class MainViewModel : ViewModel() {
 
 class MainActivity : ComponentActivity() {
     private val db by lazy { AppDatabase.getInstance(this) }
+    private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        val allGranted = permissions.all { it.value }
+        if (allGranted) {
+            Log.d("MainActivity", "Todos los permisos otorgados")
+        } else {
+            Log.w("MainActivity", "Algunos permisos fueron denegados")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AndroidThreeTen.init(this)
+
+        requestPermissions()
 
         setContent {
             val navController = rememberNavController()
@@ -85,13 +101,7 @@ class MainActivity : ComponentActivity() {
                 composable("profile") {
                     ProfileScreen(
                         userId = viewModel.userId.toString(),
-                        onNavigate = { newScreen ->
-                            if (newScreen == "login") viewModel.clearUserId()
-                            when (newScreen) {
-                                "login", "editMotorcycle", "register" -> navController.navigate(newScreen)
-                                else -> Log.w("Navigation", "Ruta no válida: $newScreen")
-                            }
-                        }
+                        navController = navController
                     )
                 }
                 composable("editMotorcycle") {
@@ -112,13 +122,40 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 }
+                composable("launchPhoneApp") {
+                    LaunchPhoneAppScreen(navController = navController)
+                }
+                composable("editUser/{userId}") { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId")?.toLongOrNull() ?: 0L
+                    EditUserScreen(
+                        userId = userId.toString(),
+                        navController = navController
+                    )
+                }
             }
         }
         scheduleSync()
     }
 
+    private fun requestPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.BLUETOOTH_SCAN
+        )
+        val permissionsToRequest = permissions.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }.toTypedArray()
+
+        if (permissionsToRequest.isNotEmpty()) {
+            permissionLauncher.launch(permissionsToRequest)
+        }
+    }
+
     private fun scheduleSync() {
-        val targetTime = LocalTime.of(12, 0) // 12:00 PM
+        val targetTime = LocalTime.of(12, 0)
         val now = LocalDateTime.now()
         val target = if (now.toLocalTime().isBefore(targetTime)) {
             now.withHour(targetTime.hour).withMinute(targetTime.minute)

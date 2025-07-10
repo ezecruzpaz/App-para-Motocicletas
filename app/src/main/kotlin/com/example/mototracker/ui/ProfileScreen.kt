@@ -8,8 +8,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import com.example.mototracker.data.AppDatabase
 import com.example.mototracker.data.User
 import com.example.mototracker.data.AppDao.UserWithMotorcycles
@@ -40,10 +43,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
+fun ProfileScreen(userId: String, navController: NavController) {
     var userData by remember { mutableStateOf<User?>(null) }
-    var motorcycleData by remember { mutableStateOf<Motorcycle?>(null) } // Para almacenar la primera motocicleta
-    var isLoading by remember { mutableStateOf(true) } // Estado de carga
+    var motorcycleData by remember { mutableStateOf<Motorcycle?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val db = remember { AppDatabase.getInstance(context) }
 
@@ -51,12 +54,12 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
         if (userId.isNotEmpty()) {
             isLoading = true
             try {
-                val id = userId.toLongOrNull() ?: 0L // Convertir userId a Long
+                val id = userId.toLongOrNull() ?: 0L
                 val userWithMotorcycles = withContext(Dispatchers.IO) {
                     db.appDao().getUserWithMotorcycles(id)
                 }
                 userData = userWithMotorcycles?.user
-                motorcycleData = userWithMotorcycles?.motorcycles?.firstOrNull() // Tomar la primera motocicleta
+                motorcycleData = userWithMotorcycles?.motorcycles?.firstOrNull()
                 if (userData != null) {
                     Log.d("Profile", "Datos cargados: User=$userData, Motorcycle=$motorcycleData")
                 } else {
@@ -81,7 +84,7 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 60.dp) // Espacio para el footer
+                .padding(bottom = 60.dp)
         ) {
             // Header
             Row(
@@ -95,7 +98,7 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    modifier = Modifier.clickable { onNavigate("login") },
+                    modifier = Modifier.clickable { navController.navigate("login") },
                     tint = Color(0xFF0D0F1C)
                 )
                 Text(
@@ -114,7 +117,7 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally // Centrar horizontalmente
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(64.dp))
@@ -133,19 +136,19 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF0D0F1C),
-                        textAlign = TextAlign.Center // Centrar texto
+                        textAlign = TextAlign.Center
                     )
                     Text(
                         text = userData?.phone?.let { "+52 $it" } ?: "+1 (N/A)",
                         fontSize = 16.sp,
                         color = Color(0xFF0D0F1C),
-                        textAlign = TextAlign.Center // Centrar texto
+                        textAlign = TextAlign.Center
                     )
                     Text(
                         text = userData?.email ?: "N/A",
                         fontSize = 16.sp,
                         color = Color(0xFF0D0F1C),
-                        textAlign = TextAlign.Center // Centrar texto
+                        textAlign = TextAlign.Center
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -158,13 +161,13 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF0D0F1C),
                 modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                textAlign = TextAlign.Start // Alinear texto a la izquierda
+                textAlign = TextAlign.Start
             )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalAlignment = Alignment.Start // Alinear a la izquierda
+                horizontalAlignment = Alignment.Start
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(64.dp))
@@ -176,7 +179,7 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                                 .padding(bottom = 16.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                             shape = RoundedCornerShape(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF8FFFFF)) // Color de fondo de la card
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF8FFFFF))
                         ) {
                             Text(
                                 text = "No motorcycle registered yet.",
@@ -187,18 +190,18 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                             )
                         }
                         FloatingActionButton(
-                            onClick = { onNavigate("editMotorcycle") },
+                            onClick = { navController.navigate("editMotorcycle") },
                             modifier = Modifier
-                                .size(48.dp) // Tamaño
+                                .size(48.dp)
                                 .align(Alignment.TopEnd)
-                                .offset(y = (-18.dp), x = (8.dp)), // Parte arriba y un poco adentro
+                                .offset(y = (-18.dp), x = (8.dp)),
                             containerColor = Color(0xFF008080),
                             elevation = FloatingActionButtonDefaults.elevation(4.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "Registrar Motocicleta",
-                                modifier = Modifier.size(24.dp), // Ícono
+                                modifier = Modifier.size(24.dp),
                                 tint = Color.White
                             )
                         }
@@ -211,7 +214,7 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                                 .padding(bottom = 16.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                             shape = RoundedCornerShape(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF8FFFFF)) // Color de fondo de la card
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFF8FFFFF))
                         ) {
                             Row(
                                 modifier = Modifier
@@ -227,61 +230,60 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                                         text = "${motorcycleData?.brand ?: "N/A"} ${motorcycleData?.model ?: "N/A"}",
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color.Black, // Nuevo color de texto
+                                        color = Color.Black,
                                         textAlign = TextAlign.Start
                                     )
                                     Text(
                                         text = "Placa: ${motorcycleData?.plate ?: "N/A"}",
                                         fontSize = 14.sp,
-                                        color = Color.Black, // Nuevo color de texto
+                                        color = Color.Black,
                                         textAlign = TextAlign.Start,
                                         modifier = Modifier.padding(top = 4.dp)
                                     )
                                     Text(
                                         text = "Año: ${motorcycleData?.year?.toString() ?: "N/A"}",
                                         fontSize = 14.sp,
-                                        color = Color.Black, // Nuevo color de texto
+                                        color = Color.Black,
                                         textAlign = TextAlign.Start,
                                         modifier = Modifier.padding(top = 4.dp)
                                     )
                                     Text(
                                         text = "Cilindrada: ${motorcycleData?.displacement?.toString() ?: "N/A"} cc",
                                         fontSize = 14.sp,
-                                        color = Color.Black, // Nuevo color de texto
+                                        color = Color.Black,
                                         textAlign = TextAlign.Start,
                                         modifier = Modifier.padding(top = 4.dp)
                                     )
                                     Text(
                                         text = "Seguro: ${motorcycleData?.insurance ?: "N/A"}",
                                         fontSize = 14.sp,
-                                        color = Color.Black, // Nuevo color de texto
+                                        color = Color.Black,
                                         textAlign = TextAlign.Start,
                                         modifier = Modifier.padding(top = 4.dp)
                                     )
                                 }
-                                // Imagen preestablecida a la derecha (cuadrada)
                                 AsyncImage(
                                     model = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIxa2Hwh8FFUJDGeFhubWEtgb9w9mZ5lhN8JnA7_fjRYyqKh-XDksKyx43xsZxu0USYU&usqp=CAU",
                                     contentDescription = "Motocycle Image",
                                     modifier = Modifier
-                                        .size(94.dp), // Forma cuadrada sin clip(CircleShape)
+                                        .size(94.dp),
                                     contentScale = ContentScale.Crop
                                 )
                             }
                         }
                         FloatingActionButton(
-                            onClick = { onNavigate("editMotorcycle") },
+                            onClick = { navController.navigate("editMotorcycle") },
                             modifier = Modifier
-                                .size(48.dp) // Tamaño
+                                .size(48.dp)
                                 .align(Alignment.TopEnd)
-                                .offset(y = (-18.dp), x = (8.dp)), // Parte arriba y un poco adentro
+                                .offset(y = (-18.dp), x = (8.dp)),
                             containerColor = Color(0xFF39D8D4),
                             elevation = FloatingActionButtonDefaults.elevation(4.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "Editar Motocicleta",
-                                modifier = Modifier.size(24.dp), // Ícono
+                                modifier = Modifier.size(24.dp),
                                 tint = Color.White
                             )
                         }
@@ -299,32 +301,32 @@ fun ProfileScreen(userId: String, onNavigate: (String) -> Unit) {
                 .align(Alignment.BottomCenter)
         ) {
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = "Home",
                     tint = Color(0xFF0D0F1C),
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { navController.navigate("home") }
                 )
                 Icon(
-                    imageVector = Icons.Default.People,
-                    contentDescription = "Users",
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Edit User",
                     tint = Color(0xFF47569E),
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { navController.navigate("editUser/$userId") }
                 )
                 Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Map",
+                    imageVector = Icons.Default.Bluetooth,
+                    contentDescription = "Bluetooth App",
                     tint = Color(0xFF47569E),
-                    modifier = Modifier.size(24.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
-                    tint = Color(0xFF47569E),
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { navController.navigate("launchPhoneApp") }
                 )
             }
         }
