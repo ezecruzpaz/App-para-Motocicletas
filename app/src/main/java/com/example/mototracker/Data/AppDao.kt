@@ -1,6 +1,7 @@
 package com.example.mototracker.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Embedded
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -20,14 +21,14 @@ interface AppDao {
     @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
     suspend fun getUserById(id: Long): User?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE) // Cambiado a REPLACE para evitar conflictos
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMotorcycle(motorcycle: Motorcycle)
 
     @Query("SELECT * FROM motorcycles WHERE userId = :userId")
     suspend fun getMotorcyclesByUserId(userId: Long): List<Motorcycle>
 
     @Update
-    suspend fun updateMotorcycle(motorcycle: Motorcycle) // Nuevo método para actualizar
+    suspend fun updateMotorcycle(motorcycle: Motorcycle)
 
     @Update
     suspend fun markUserAsSynced(user: User)
@@ -53,4 +54,28 @@ interface AppDao {
         )
         val motorcycles: List<Motorcycle>
     )
+
+    // Nuevos métodos para EmergencyContact
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEmergencyContact(emergencyContact: EmergencyContact)
+
+    @Query("SELECT * FROM emergency_contacts WHERE id = :id LIMIT 1")
+    suspend fun getEmergencyContactById(id: Long): EmergencyContact?
+
+    @Query("SELECT * FROM emergency_contacts WHERE userId = :userId")
+    suspend fun getEmergencyContactsByUserId(userId: Long): List<EmergencyContact>
+
+    @Update
+    suspend fun updateEmergencyContact(emergencyContact: EmergencyContact)
+
+    @Query("DELETE FROM emergency_contacts WHERE id = :id")
+    suspend fun deleteEmergencyContact(id: Long)
+
+    @Query("SELECT * FROM emergency_contacts WHERE userId = :userId")
+    fun getEmergencyContactsForUser(userId: Long): List<EmergencyContact>
+
+
+
+    @Delete
+    fun deleteEmergencyContact(contact: EmergencyContact)
 }

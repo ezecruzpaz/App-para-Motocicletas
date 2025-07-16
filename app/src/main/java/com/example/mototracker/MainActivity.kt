@@ -28,7 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.work.*
 import com.example.mototracker.data.AppDatabase
-import com.example.mototracker.ui.EditUserScreen
+import com.example.mototracker.ui.AddEmergencyContactScreen
 import com.example.mototracker.ui.LaunchPhoneAppScreen
 import com.example.mototracker.ui.LoginScreen
 import com.example.mototracker.ui.ProfileScreen
@@ -125,12 +125,9 @@ class MainActivity : ComponentActivity() {
                 composable("launchPhoneApp") {
                     LaunchPhoneAppScreen(navController = navController)
                 }
-                composable("editUser/{userId}") { backStackEntry ->
+                composable("addEmergencyContact/{userId}") { backStackEntry ->
                     val userId = backStackEntry.arguments?.getString("userId")?.toLongOrNull() ?: 0L
-                    EditUserScreen(
-                        userId = userId.toString(),
-                        navController = navController
-                    )
+                    AddEmergencyContactScreen(navController = navController, userId = userId.toString())
                 }
             }
         }

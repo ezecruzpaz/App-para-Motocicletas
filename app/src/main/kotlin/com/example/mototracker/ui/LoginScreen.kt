@@ -110,15 +110,7 @@ fun LoginScreen(onLoginSuccess: (Long) -> Unit, onNavigate: (String) -> Unit) {
                         }
                     }
                 )
-                Text(
-                    text = "Forgot Password?",
-                    color = Color(0xFF747474),
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(bottom = 15.dp)
-                )
+
                 Button(
                     onClick = {
                         if (email.isEmpty() || password.isEmpty()) {

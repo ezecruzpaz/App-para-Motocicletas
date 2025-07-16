@@ -33,8 +33,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.material.icons.filled.Emergency
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.mototracker.MainViewModel
+import com.example.mototracker.R
 import com.example.mototracker.data.AppDatabase
 import com.example.mototracker.data.User
 import com.example.mototracker.data.AppDao.UserWithMotorcycles
@@ -48,6 +55,7 @@ fun ProfileScreen(userId: String, navController: NavController) {
     var motorcycleData by remember { mutableStateOf<Motorcycle?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     val context = LocalContext.current
+    val viewModel: MainViewModel = viewModel() // Inyectar MainViewModel
     val db = remember { AppDatabase.getInstance(context) }
 
     LaunchedEffect(userId) {
@@ -305,25 +313,32 @@ fun ProfileScreen(userId: String, navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint = Color(0xFF0D0F1C),
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { navController.navigate("home") }
-                )
-                Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "Edit User",
-                    tint = Color(0xFF47569E),
+                    contentDescription = "Profile",
+                    tint = Color(0xFF39D8D4),
                     modifier = Modifier
                         .size(24.dp)
-                        .clickable { navController.navigate("editUser/$userId") }
+
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.emergencia),
+                    contentDescription = "Contacto de Emergencia",
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable {
+                            Log.d("ProfileScreen", "Navegando con userId: $userId")
+                            if (userId.toLongOrNull() ?: 0 > 0) {
+                                navController.navigate("addEmergencyContact/$userId")
+                            } else {
+                                Log.e("ProfileScreen", "userId es inválido: $userId")
+                            }
+                        },
+                    colorFilter = ColorFilter.tint(Color(0xFF39D8D4))
                 )
                 Icon(
                     imageVector = Icons.Default.Bluetooth,
-                    contentDescription = "Bluetooth App",
-                    tint = Color(0xFF47569E),
+                    contentDescription = "rutas",
+                    tint = Color(0xFF39D8D4),
                     modifier = Modifier
                         .size(24.dp)
                         .clickable { navController.navigate("launchPhoneApp") }
