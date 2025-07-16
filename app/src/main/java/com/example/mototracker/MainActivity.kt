@@ -1,7 +1,10 @@
 package com.example.mototracker
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -68,9 +71,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AndroidThreeTen.init(this)
-
+        Log.d("MainActivity", "Iniciando aplicación, programando sincronización")
         requestPermissions()
-
         setContent {
             val navController = rememberNavController()
             val viewModel: MainViewModel = viewModel()
@@ -152,29 +154,44 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun scheduleSync() {
-        val targetTime = LocalTime.of(12, 0)
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        val hasInternet = capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        if (!hasInternet) {
+            Log.w("MainActivity", "No hay conexión a internet, la sincronización no se programará")
+            return
+        }
+
+        val targetTime = LocalTime.of(14, 0) // 2:00 PM CST
         val now = LocalDateTime.now()
         val target = if (now.toLocalTime().isBefore(targetTime)) {
             now.withHour(targetTime.hour).withMinute(targetTime.minute)
         } else {
             now.plusDays(1).withHour(targetTime.hour).withMinute(targetTime.minute)
         }
-        val delay = Duration.between(now, target).toMillis()
+        val initialDelay = Duration.between(now, target).toMillis()
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val syncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+        val syncWorkRequest = PeriodicWorkRequestBuilder<SyncWorker>(1, TimeUnit.DAYS)
+            .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
             .setConstraints(constraints)
             .build()
 
-        WorkManager.getInstance(this).enqueueUniqueWork(
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "syncWork",
-            ExistingWorkPolicy.REPLACE,
-            syncRequest
+            ExistingPeriodicWorkPolicy.REPLACE,
+            syncWorkRequest
         )
+        Log.d("MainActivity", "Sincronización programada para las 2:00 PM CST")
+
+        // Forzar ejecución manual para pruebas (opcional)
+        val oneTimeWorkRequest = OneTimeWorkRequestBuilder<SyncWorker>().build()
+        WorkManager.getInstance(this).enqueue(oneTimeWorkRequest)
+        Log.d("MainActivity", "Sincronización forzada manualmente")
     }
 }
 

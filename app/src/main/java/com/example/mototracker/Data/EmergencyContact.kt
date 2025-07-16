@@ -10,5 +10,6 @@ data class EmergencyContact(
     val fullName: String,
     val phoneNumber: String,
     val relationship: String? = null,
-    val email: String? = null
+    val email: String? = null,
+    var synced: Boolean = false
 )

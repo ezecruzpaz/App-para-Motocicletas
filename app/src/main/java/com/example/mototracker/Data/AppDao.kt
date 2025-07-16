@@ -55,7 +55,7 @@ interface AppDao {
         val motorcycles: List<Motorcycle>
     )
 
-    // Nuevos métodos para EmergencyContact
+    // Métodos para EmergencyContact
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEmergencyContact(emergencyContact: EmergencyContact)
 
@@ -74,8 +74,13 @@ interface AppDao {
     @Query("SELECT * FROM emergency_contacts WHERE userId = :userId")
     fun getEmergencyContactsForUser(userId: Long): List<EmergencyContact>
 
-
-
     @Delete
     fun deleteEmergencyContact(contact: EmergencyContact)
+
+    // Nuevos métodos para sincronización de contactos
+    @Query("SELECT * FROM emergency_contacts WHERE synced = 0")
+    suspend fun getUnsyncedEmergencyContacts(): List<EmergencyContact>
+
+    @Update
+    suspend fun markEmergencyContactAsSynced(emergencyContact: EmergencyContact)
 }

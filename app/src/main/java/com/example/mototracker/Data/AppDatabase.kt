@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.annotation.NonNull
 
-@Database(entities = [User::class, Motorcycle::class,EmergencyContact::class], version = 5) // Incrementa de 1 a 2 (o el número anterior + 1)
+@Database(entities = [User::class, Motorcycle::class,EmergencyContact::class], version = 6) // Incrementa de 1 a 2 (o el número anterior + 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun appDao(): AppDao
 

@@ -11,7 +11,7 @@ data class Motorcycle(
     val model: String,
     val year: Int?, // Opcional
     val plate: String,
-    var synced: Boolean = false,
     val displacement: Int?, // Opcional
-    val insurance: String? // Opcional
-)
+    val insurance: String?, // Opcional
+    var synced: Boolean = false
+    )
