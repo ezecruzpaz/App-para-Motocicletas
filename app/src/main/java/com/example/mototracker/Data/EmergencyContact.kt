@@ -1,5 +1,6 @@
 package com.example.mototracker.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -11,5 +12,4 @@ data class EmergencyContact(
     val phoneNumber: String,
     val relationship: String? = null,
     val email: String? = null,
-    var synced: Boolean = false
-)
+    @ColumnInfo(name = "synced") var synced: Boolean = false)

@@ -83,4 +83,20 @@ interface AppDao {
 
     @Update
     suspend fun markEmergencyContactAsSynced(emergencyContact: EmergencyContact)
+
+    @Query("SELECT * FROM sensor_data WHERE synced = 0")
+    suspend fun getUnsyncedData(): List<SensorData>
+
+    // Nuevos métodos para SensorData y SpeedData
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(sensor: SensorData)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSpeed(speedData: SpeedData)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAccident(accidentEvent: AccidentEvent)
+
+    @Update
+    suspend fun update(sensor: SensorData)
 }

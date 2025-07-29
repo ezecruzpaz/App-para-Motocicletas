@@ -70,6 +70,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d("BluetoothService", "Base de datos inicializada: ${db.isOpen}")
         AndroidThreeTen.init(this)
         Log.d("MainActivity", "Iniciando aplicación, programando sincronización")
         requestPermissions()

@@ -49,6 +49,8 @@ dependencies {
 
     // Room dependencies (usar una sola versión consistente)
     implementation("androidx.room:room-runtime:2.6.1")
+    implementation(libs.google.firebase.database.ktx)
+    implementation(libs.support.annotations)
     kapt("androidx.room:room-compiler:2.6.1") // Usa kapt para Kotlin
     implementation("androidx.room:room-ktx:2.6.1") // Añade esta línea
 
@@ -99,4 +101,7 @@ dependencies {
 
     // ViewModel con Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation ("cn.pedant.sweetalert:library:1.3.1")
+
+    implementation(libs.retrofit.gson)
 }

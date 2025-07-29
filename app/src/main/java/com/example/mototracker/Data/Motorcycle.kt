@@ -1,5 +1,6 @@
 package com.example.mototracker.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -13,5 +14,6 @@ data class Motorcycle(
     val plate: String,
     val displacement: Int?, // Opcional
     val insurance: String?, // Opcional
-    var synced: Boolean = false
+    var synced: Boolean = false,
+    @ColumnInfo(name = "color") val color: String? = null,
     )

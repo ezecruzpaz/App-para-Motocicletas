@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -79,7 +80,7 @@ fun LaunchPhoneAppScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp)) // Espacio pequeño entre imagen y botón
 
-            // Botón cerca de la imagen
+            // Botón Iniciar Ruta
             Button(
                 onClick = {
                     val serviceIntent = Intent(context, BluetoothService::class.java)
@@ -88,7 +89,7 @@ fun LaunchPhoneAppScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .height(35.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8FFFFF)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF39D8D4)),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -101,6 +102,37 @@ fun LaunchPhoneAppScreen(navController: NavController) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Iniciar Ruta",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp)) // Espacio entre botones
+
+            // Botón Terminar Ruta
+            Button(
+                onClick = {
+                    val serviceIntent = Intent(context, BluetoothService::class.java)
+                    context.stopService(serviceIntent)
+                },
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(35.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF39D8D4)),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Stop,
+                        contentDescription = "Terminar",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Terminar Ruta",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp

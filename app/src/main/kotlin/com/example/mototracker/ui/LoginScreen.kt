@@ -1,5 +1,6 @@
 package com.example.mototracker.ui
 
+import android.content.Context.MODE_PRIVATE
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,8 +58,8 @@ fun LoginScreen(onLoginSuccess: (Long) -> Unit, onNavigate: (String) -> Unit) {
             modifier = Modifier
                 .width(350.dp)
                 .height(400.dp),
-                 colors = CardDefaults.cardColors(containerColor = Color(0xFFD4F4FC)), // Color de fondo completo
-                elevation = CardDefaults.cardElevation(8.dp)
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFD4F4FC)),
+            elevation = CardDefaults.cardElevation(8.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -117,14 +118,20 @@ fun LoginScreen(onLoginSuccess: (Long) -> Unit, onNavigate: (String) -> Unit) {
                             errorMessage = "Por favor, completa todos los campos"
                         } else {
                             errorMessage = null
-                            scope.launch { // Usar el CoroutineScope para lanzar la corrutina
+                            scope.launch {
                                 try {
-                                    val user = withContext1(context = Dispatchers.IO) {
+                                    val user = withContext1(Dispatchers.IO) {
                                         db.appDao().getUserByEmail(email)
                                     }
                                     if (user != null && user.password == password) {
+                                        // Guardar el user.id en SharedPreferences como Long
+                                        val sharedPref = context.getSharedPreferences("MyPrefs", MODE_PRIVATE)
+                                        with(sharedPref.edit()) {
+                                            putLong("logged_in_user_id", user.id)
+                                            apply()
+                                        }
                                         onLoginSuccess(user.id)
-                                        Log.d("Login", "Inicio de sesión exitoso para $email")
+                                        Log.d("Login", "Inicio de sesión exitoso para $email con userId=${user.id}")
                                     } else {
                                         errorMessage = "Email o contraseña incorrecta"
                                         Log.w("Login", "Credenciales inválidas para email: $email")

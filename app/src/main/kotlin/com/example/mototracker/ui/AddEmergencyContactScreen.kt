@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DividerDefaults.color
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.text.input.KeyboardType
@@ -273,6 +274,7 @@ fun AddEmergencyContactScreen(navController: NavController, userId: String) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF8FFFFF)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     shape = RoundedCornerShape(8.dp)
                 ) {
